@@ -16,5 +16,12 @@ namespace SMC_Data.Controllers
             var distance = calculationsLogic.CalculateDistanceCovered(json);
             return Json(distance);
         }
+
+        [HttpPut("~/CalculateAvgSpeed")]
+        public JsonResult CalculateAvgSpeed(IFormFile json)
+        {
+            var avgSpeed = calculationsLogic.CalculateAverageSpeed(json);
+            return Json(avgSpeed);
+        }
     }
 }
