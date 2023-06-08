@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SMC_Data.Interfaces;
 using SMC_Data.Logic;
 
 namespace SMC_Data.Controllers
@@ -8,7 +9,12 @@ namespace SMC_Data.Controllers
     [ApiController]
     public class CalculationsController : Controller
     {
-        CalculationsLogic calculationsLogic = new();
+        private readonly ICalculationsLogic calculationsLogic;
+
+        public CalculationsController(ICalculationsLogic calculations)
+        {
+            calculationsLogic = calculations;
+        }
 
         [HttpPut("~/CalculateDistanceCovered")]
         public JsonResult CalculateDistanceCovered(IFormFile json)

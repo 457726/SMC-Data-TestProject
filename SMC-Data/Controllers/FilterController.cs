@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SMC_Data.Interfaces;
 using SMC_Data.Logic;
 using SMC_Data.Models;
 using System.Text.Json;
@@ -13,7 +14,11 @@ namespace SMC_Data.Controllers
     [ApiController]
     public class FilterController : Controller
     {
-        FilterLogic filterLogic = new();
+        private readonly IFilterLogic _filterLogic;
+        public FilterController(IFilterLogic filterLogic)
+        {
+            _filterLogic = filterLogic;
+        }
 
         [HttpPut("~/TestReturnedData")]
         public JsonResult TestData(IFormFile json)

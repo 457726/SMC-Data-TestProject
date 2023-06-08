@@ -1,17 +1,18 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SMC_Data.Interfaces;
 using SMC_Data.Models;
 
 namespace SMC_Data.Logic
 {
-    public class CalculationsLogic
+    public class CalculationsLogic : ICalculationsLogic
     {
         public List<SplitData> ProcessFile(IFormFile file)
         {
             // Read the file content
             using (var streamReader = new StreamReader(file.OpenReadStream()))
             {
-                var jsonString =  streamReader.ReadToEnd();
+                var jsonString = streamReader.ReadToEnd();
 
                 var jsonObject = JObject.Parse(jsonString);
 

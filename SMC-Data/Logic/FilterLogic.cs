@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SMC_Data.Interfaces;
 using SMC_Data.Models;
 using System.Text.Json;
 
 namespace SMC_Data.Logic
 {
-    public class FilterLogic
+    public class FilterLogic : IFilterLogic
     {
-        public FilterLogic()
-        {
-
-        }
         public IList<SplitData> TestData(IFormFile json)
         {
             string fileContent = "";
@@ -18,8 +15,8 @@ namespace SMC_Data.Logic
             {
                 fileContent = reader.ReadToEnd();
             }
-            JObject banaan = JObject.Parse(fileContent);
-            IList<JToken> result = banaan["measurements"].Children().ToList();
+            JObject jObject = JObject.Parse(fileContent);
+            IList<JToken> result = jObject["measurements"].Children().ToList();
             IList<SplitData> splitData = new List<SplitData>();
             foreach (JToken o in result)
             {
