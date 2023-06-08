@@ -50,18 +50,20 @@ namespace SMC_Data.Logic
             return (totalDistance * 0.001);
         }
 
-        //private double CalculateAverageSpeed(List<SplitData> data)
-        //{
-        //    // Calculate the total distance traveled
-        //    var totalDistance = CalculateDistanceCovered(data);
+        public double CalculateAverageSpeed(IFormFile file)
+        {
+            var data = ProcessFile(file);
 
-        //    // Calculate the total time taken (assuming timestamps are in seconds)
-        //    var totalTime = (data[data.Count - 1].t.Value - data[0].t.Value).TotalSeconds;
+            // Calculate the total distance traveled
+            var totalDistance = CalculateDistanceCovered(file);
 
-        //    // Calculate the average speed
-        //    var averageSpeed = totalDistance / totalTime;
+            // Calculate the total time taken (assuming timestamps are in seconds)
+            var totalTime = (data[data.Count - 1].t.Value - data[0].t.Value).TotalSeconds;
 
-        //    return averageSpeed;
-        //}
+            // Calculate the average speed and make it Km/h instead of m/s
+            var averageSpeed = (totalDistance / totalTime) * 3.6;
+
+            return averageSpeed;
+        }
     }
 }
