@@ -247,20 +247,5 @@ namespace SMC_Data.Logic
                 return new JObject(ex.Message);
             }
         }
-
-        //public static double MedianFilter(double?[] arr)
-        //{
-        //    // Filter out null values
-        //    arr = arr.Where(x => x.HasValue).ToArray();
-
-        //    // Sort the remaining values
-        //    Array.Sort(arr);
-
-        //    // Compute the median
-        //    int mid = arr.Length / 2;
-        //    double median = (arr.Length % 2 != 0) ? arr[mid].Value : (arr[mid - 1].Value + arr[mid].Value) / 2;
-
-        //    return median;
-        //}
     }
 }

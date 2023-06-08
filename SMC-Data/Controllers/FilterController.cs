@@ -11,7 +11,7 @@ namespace SMC_Data.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DataController : Controller
+    public class FilterController : Controller
     {
         FilterLogic filterLogic = new();
 
