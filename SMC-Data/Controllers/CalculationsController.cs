@@ -13,7 +13,7 @@ namespace SMC_Data.Controllers
 
         public CalculationsController(ICalculationsLogic calculations)
         {
-            this.calculationsLogic = calculations;
+            calculationsLogic = calculations;
         }
 
         [HttpPut("~/CalculateDistanceCovered")]
