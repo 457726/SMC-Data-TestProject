@@ -42,7 +42,7 @@ namespace SMC_Data.Logic
                 var currentPoint = data[i];
                 var nextPoint = data[i + 1];
 
-                // Calculate the distance between consecutive points
+                // Calculate the distance between consecutive points by using the pythagoras theorem.
                 var distance = Math.Sqrt(Math.Pow(nextPoint.x.Value - currentPoint.x.Value, 2) + Math.Pow(nextPoint.y.Value - currentPoint.y.Value, 2));
 
                 // Add the distance to the total
@@ -65,6 +65,36 @@ namespace SMC_Data.Logic
             var averageSpeed = (totalDistance / totalTime) * 3.6;
 
             return averageSpeed;
+        }
+
+        public double CalculateHighestSpeed(IFormFile file)
+        {
+            var data = ProcessFile(file);
+
+            double highestSpeed = 0;
+
+            for (int i = 0; i < data.Count - 1; i++)
+            {
+                var currentPoint = data[i];
+                var nextPoint = data[i + 1];
+
+                // Calculate the distance between consecutive points
+                var distance = (Math.Sqrt(Math.Pow(nextPoint.x.Value - currentPoint.x.Value, 2) + Math.Pow(nextPoint.y.Value - currentPoint.y.Value, 2))*0.001);
+
+                // Calculate the time taken to travel between the points (assuming timestamps are in milliseconds)
+                var time = (nextPoint.t.Value - currentPoint.t.Value).TotalSeconds;
+
+                // Calculate the speed between the points
+                var speed = distance / time;
+
+                // Update the highest speed if necessary
+                if (speed > highestSpeed)
+                {
+                    highestSpeed = speed;
+                }
+            }
+
+            return (highestSpeed);
         }
     }
 }
