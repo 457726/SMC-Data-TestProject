@@ -52,11 +52,11 @@ namespace SMC_Data.Controllers
             return Json(outsidebounds);
         }
 
-        [HttpPatch("~/MedianFilter")]
-        public JsonResult MedianFilter(IFormFile file)
+        [HttpPut("~/MedianFilter")]
+        public ContentResult MedianFilter(IFormFile file)
         {
             var result = _filterLogic.MedianFilter(file);
-            return Json(result);
+            return Content(result.ToString(), "application/json");
         }
     }
 }
