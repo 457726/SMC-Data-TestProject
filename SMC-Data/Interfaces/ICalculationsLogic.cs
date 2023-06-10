@@ -6,7 +6,6 @@ namespace SMC_Data.Interfaces
     {
         double CalculateAverageSpeed(IFormFile file);
         double CalculateDistanceCovered(IFormFile file);
-        List<SplitData> ProcessFile(IFormFile file);
         double CalculateHighestSpeed(IFormFile file);
     }
 }
