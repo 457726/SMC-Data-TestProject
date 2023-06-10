@@ -136,46 +136,17 @@ namespace SMC_Data.Logic
         {
             try
             {
-                var json = new StreamReader(file.OpenReadStream()).ReadToEnd();
+                string json = ReadFileContent(file);
+                JObject jObject = JObject.Parse(json);
+                JArray measurements = jObject["measurements"].Value<JArray>();
 
-                var jObject = JObject.Parse(json);
-                var measurements = jObject["measurements"].ToArray();
-
-                for (int i = 0; i < measurements.Length; i += 3)
+                for (int i = 0; i < measurements.Count - 3; i += 4)
                 {
-                    if (i + 2 >= measurements.Length)
-                    {
-                        // If we've reached the end of the list, there aren't enough
-                        // measurements left to calculate a median for this group of 3.
-                        break;
-                    }
-
-                    var valuesX = new[] { (double?)measurements[i]["x"], (double?)measurements[i + 1]["x"], (double?)measurements[i + 2]["x"] };
-                    var valuesY = new[] { (double?)measurements[i]["y"], (double?)measurements[i + 1]["y"], (double?)measurements[i + 2]["y"] };
-                    var valuesZ = new[] { (double?)measurements[i]["z"], (double?)measurements[i + 1]["z"], (double?)measurements[i + 2]["z"] };
-
-                    var sortedX = valuesX.OrderBy(v => v).ToArray();
-                    var sortedY = valuesY.OrderBy(v => v).ToArray();
-                    var sortedZ = valuesZ.OrderBy(v => v).ToArray();
-
-                    var medianX = sortedX[1];
-                    var medianY = sortedY[1];
-                    var medianZ = sortedZ[1];
-
-                    measurements[i]["x"] = valuesX.Max() == medianX ? medianX : (double?)null;
-                    measurements[i]["y"] = valuesY.Max() == medianY ? medianY : (double?)null;
-                    measurements[i]["z"] = valuesZ.Max() == medianZ ? medianZ : (double?)null;
-
-                    measurements[i + 1]["x"] = valuesX.Max() == medianX ? medianX : (double?)null;
-                    measurements[i + 1]["y"] = valuesY.Max() == medianY ? medianY : (double?)null;
-                    measurements[i + 1]["z"] = valuesZ.Max() == medianZ ? medianZ : (double?)null;
-
-                    measurements[i + 2]["x"] = valuesX.Max() == medianX ? medianX : (double?)null;
-                    measurements[i + 2]["y"] = valuesY.Max() == medianY ? medianY : (double?)null;
-                    measurements[i + 2]["z"] = valuesZ.Max() == medianZ ? medianZ : (double?)null;
+                    FilterMeasurementsGroup(measurements, i, "x");
+                    FilterMeasurementsGroup(measurements, i, "y");
+                    FilterMeasurementsGroup(measurements, i, "z");
                 }
 
-                jObject["measurements"] = new JArray(measurements);
                 return jObject;
             }
             catch (Exception ex)
@@ -183,5 +154,30 @@ namespace SMC_Data.Logic
                 return new JObject(ex.Message);
             }
         }
+
+        private void FilterMeasurementsGroup(JArray measurements, int startIndex, string axis)
+        {
+            List<double?> values = new List<double?>();
+            for (int i = startIndex; i < startIndex + 4; i++)
+            {
+                double? value = measurements[i][axis].Value<double?>();
+                values.Add(value);
+            }
+
+            values.Sort();
+            double? median = values[1];
+
+            for (int i = startIndex; i < startIndex + 4; i++)
+            {
+                double? value = measurements[i][axis].Value<double?>();
+                if (value != median)
+                {
+                    measurements[i][axis] = median;
+                }
+            }
+        }
+
+        // Other existing methods...
+
     }
 }
