@@ -176,8 +176,5 @@ namespace SMC_Data.Logic
                 }
             }
         }
-
-        // Other existing methods...
-
     }
 }

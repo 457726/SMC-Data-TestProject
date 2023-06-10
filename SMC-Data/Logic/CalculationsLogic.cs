@@ -7,22 +7,14 @@ namespace SMC_Data.Logic
 {
     public class CalculationsLogic : ICalculationsLogic
     {
-        public List<SplitData> ProcessFile(IFormFile file)
+        private List<SplitData> ProcessFile(IFormFile file)
         {
-            // Read the file content
             using (var streamReader = new StreamReader(file.OpenReadStream()))
             {
                 var jsonString = streamReader.ReadToEnd();
-
                 var jsonObject = JObject.Parse(jsonString);
-
-                // Get the "measurements" field from the JSON object
                 var measurementsArray = jsonObject["measurements"];
-
-                // Deserialize the "measurements" array into a list of SplitData objects
                 var splitDataList = measurementsArray.ToObject<List<SplitData>>();
-
-                // Make sure only valid data points are used
                 var filteredList = splitDataList
                     .Where(data => data.x.HasValue && data.y.HasValue)
                     .ToList();
@@ -31,23 +23,31 @@ namespace SMC_Data.Logic
             }
         }
 
+        private double CalculateDistance(double x1, double y1, double x2, double y2)
+        {
+            return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+        }
+
         public double CalculateDistanceCovered(IFormFile file)
         {
             var data = ProcessFile(file);
 
-            // Calculate the total distance traveled
+            if (data.Count < 2)
+            {
+                throw new InvalidOperationException("Insufficient data points to calculate distance.");
+            }
+
             double totalDistance = 0;
             for (int i = 0; i < data.Count - 1; i++)
             {
                 var currentPoint = data[i];
                 var nextPoint = data[i + 1];
 
-                // Calculate the distance between consecutive points by using the pythagoras theorem.
-                var distance = Math.Sqrt(Math.Pow(nextPoint.x.Value - currentPoint.x.Value, 2) + Math.Pow(nextPoint.y.Value - currentPoint.y.Value, 2));
+                var distance = CalculateDistance(currentPoint.x.Value, currentPoint.y.Value, nextPoint.x.Value, nextPoint.y.Value);
 
-                // Add the distance to the total
                 totalDistance += distance;
             }
+
             return (totalDistance * 0.001);
         }
 
@@ -55,13 +55,13 @@ namespace SMC_Data.Logic
         {
             var data = ProcessFile(file);
 
-            // Calculate the total distance traveled
+            if (data.Count < 2)
+            {
+                throw new InvalidOperationException("Insufficient data points to calculate average speed.");
+            }
+
             var totalDistance = CalculateDistanceCovered(file);
-
-            // Calculate the total time taken (assuming timestamps are in seconds)
             var totalTime = (data[data.Count - 1].t.Value - data[0].t.Value).TotalSeconds;
-
-            // Calculate the average speed and make it Km/h instead of m/s
             var averageSpeed = (totalDistance / totalTime) * 3.6;
 
             return averageSpeed;
@@ -71,6 +71,11 @@ namespace SMC_Data.Logic
         {
             var data = ProcessFile(file);
 
+            if (data.Count < 2)
+            {
+                throw new InvalidOperationException("Insufficient data points to calculate highest speed.");
+            }
+
             double highestSpeed = 0;
 
             for (int i = 0; i < data.Count - 1; i++)
@@ -78,23 +83,18 @@ namespace SMC_Data.Logic
                 var currentPoint = data[i];
                 var nextPoint = data[i + 1];
 
-                // Calculate the distance between consecutive points
-                var distance = (Math.Sqrt(Math.Pow(nextPoint.x.Value - currentPoint.x.Value, 2) + Math.Pow(nextPoint.y.Value - currentPoint.y.Value, 2))*0.001);
-
-                // Calculate the time taken to travel between the points (assuming timestamps are in milliseconds)
+                var distance = CalculateDistance(currentPoint.x.Value, currentPoint.y.Value, nextPoint.x.Value, nextPoint.y.Value) * 0.001;
                 var time = (nextPoint.t.Value - currentPoint.t.Value).TotalSeconds;
-
-                // Calculate the speed between the points
                 var speed = distance / time;
 
-                // Update the highest speed if necessary
                 if (speed > highestSpeed)
                 {
                     highestSpeed = speed;
                 }
             }
 
-            return (highestSpeed);
+            return highestSpeed;
         }
     }
+
 }
