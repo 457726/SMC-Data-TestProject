@@ -20,43 +20,36 @@ namespace SMC_Data.Controllers
             _filterLogic = filterLogic;
         }
 
-        [HttpPut("~/TestReturnedData")]
-        public JsonResult TestData(IFormFile json)
-        {
-            var data = filterLogic.TestData(json);
-            return Json(data);
-        }
-
         [HttpPut("~/FilterMultiplesZ")]
         public JsonResult FilterOutMultiplesZ(IFormFile json)
         {
-            var results = filterLogic.FilterOutMultiplesZ(json);
+            var results = _filterLogic.FilterOutMultiplesZ(json);
             return Json(results);
         }
         [HttpPut("~/FilterMultiplesX")]
         public JsonResult FilterOutMultiplesX(IFormFile json)
         {
-            var results = filterLogic.FilterOutMultiplesX(json);
+            var results = _filterLogic.FilterOutMultiplesX(json);
             return Json(results);
         }
         [HttpPut("~/FilterMultiplesY")]
         public JsonResult FilterOutMultiplesY(IFormFile json)
         {
-            var results = filterLogic.FilterOutMultiplesY(json);
+            var results = _filterLogic.FilterOutMultiplesY(json);
             return Json(results);
         }
         [HttpPut("~/FilterBounds")]
         public JsonResult FilterOutsideBounds(IFormFile json)
         {
-            var outsidebounds = filterLogic.FilterOutsideBounds(json);
+            var outsidebounds = _filterLogic.FilterOutsideBounds(json);
             return Json(outsidebounds);
         }
 
-        [HttpPatch("~/MedianFilter")]
-        public JsonResult MedianFilter(IFormFile file)
+        [HttpPut("~/MedianFilter")]
+        public ContentResult MedianFilter(IFormFile file)
         {
-            var result = filterLogic.MedianFilter(file);
-            return Json(result);
+            var result = _filterLogic.MedianFilter(file);
+            return Content(result.ToString(), "application/json");
         }
     }
 }

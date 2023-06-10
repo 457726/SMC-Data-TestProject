@@ -29,5 +29,12 @@ namespace SMC_Data.Controllers
             var avgSpeed = calculationsLogic.CalculateAverageSpeed(json);
             return Json(avgSpeed);
         }
+
+        [HttpPut("~/CalculateHighSpeed")]
+        public JsonResult CalculateHighSpeed(IFormFile json)
+        {
+            var highSpeed = calculationsLogic.CalculateHighestSpeed(json);
+            return Json(highSpeed);
+        }
     }
 }
