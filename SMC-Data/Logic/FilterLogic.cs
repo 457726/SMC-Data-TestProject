@@ -8,29 +8,12 @@ namespace SMC_Data.Logic
 {
     public class FilterLogic : IFilterLogic
     {
-        public IList<SplitData> TestData(IFormFile json)
-        {
-            string fileContent = "";
-            using (var reader = new StreamReader(json.OpenReadStream()))
-            {
-                fileContent = reader.ReadToEnd();
-            }
-            JObject jObject = JObject.Parse(fileContent);
-            IList<JToken> result = jObject["measurements"].Children().ToList();
-            IList<SplitData> splitData = new List<SplitData>();
-            foreach (JToken o in result)
-            {
-                SplitData searchResult = o.ToObject<SplitData>();
-                splitData.Add(searchResult);
-            }
-            return splitData;
-        }
-
+        
         public List<string> FilterOutMultiplesZ(IFormFile json)
         {
             string fileContent = ReadFileContent(json);
             List<SplitData> splitData = ParseSplitData(fileContent);
-            List<int> numbers = GetNonZeroNumbers(splitData);
+            List<int> numbers = GetNonNullZValues(splitData);
             numbers.Sort();
             Dictionary<int, int> occurrences = CountOccurrences(numbers);
             List<string> results = GenerateResults(occurrences);
@@ -52,7 +35,17 @@ namespace SMC_Data.Logic
             return result.Select(o => o.ToObject<SplitData>()).ToList();
         }
 
-        private List<int> GetNonZeroNumbers(List<SplitData> splitData)
+        private List<int> GetNonNullXValues(List<SplitData> splitData)
+        {
+            return splitData.Where(data => data.x != null).Select(data => Convert.ToInt32(data.x)).ToList();
+        }
+
+        private List<int> GetNonNullYValues(List<SplitData> splitData)
+        {
+            return splitData.Where(data => data.y != null).Select(data => Convert.ToInt32(data.y)).ToList();
+        }
+
+        private List<int> GetNonNullZValues(List<SplitData> splitData)
         {
             return splitData.Where(data => data.z != null).Select(data => Convert.ToInt32(data.z)).ToList();
         }
@@ -94,124 +87,51 @@ namespace SMC_Data.Logic
 
         public List<string> FilterOutMultiplesX(IFormFile json)
         {
-            string fileContent = "";
-            List<string> results = new List<string>();
-            int[] numbers = new int[100000];
-            using (var reader = new StreamReader(json.OpenReadStream()))
-            {
-                fileContent = reader.ReadToEnd();
-            }
-            JObject measurements = JObject.Parse(fileContent);
-            IList<JToken> result = measurements["measurements"].Children().ToList();
-            IList<SplitData> splitData = new List<SplitData>();
-            foreach (JToken o in result)
-            {
-                SplitData searchResult = o.ToObject<SplitData>();
-                splitData.Add(searchResult);
-            }
-            var d = new Dictionary<int, int>();
-            int index = 0;
-            foreach (var item in splitData)
-            {
-                if (item.x != null)
-                {
-                    numbers[index] = Convert.ToInt32(item.x);
-                    index++;
-                }
-            }
-            Array.Sort(numbers);
-            foreach (var item in numbers)
-            {
-                if (d.ContainsKey(item) && item != 0)
-                {
-                    d[item]++;
-                }
-                else
-                {
-                    d[item] = 1;
-                }
-            }
-            foreach (var val in d)
-            {
-                string res = val.Key + " occured " + val.Value + " times";
-                results.Add(res);
-            }
-            results.RemoveAt(0);
+            string fileContent = ReadFileContent(json);
+            List<SplitData> splitData = ParseSplitData(fileContent);
+            List<int> numbers = GetNonNullXValues(splitData);
+            numbers.Sort();
+            Dictionary<int, int> occurrences = CountOccurrences(numbers);
+            List<string> results = GenerateResults(occurrences);
             return results;
         }
+
         public List<string> FilterOutMultiplesY(IFormFile json)
         {
-            string fileContent = "";
-            List<string> results = new List<string>();
-            int[] numbers = new int[100000];
-            using (var reader = new StreamReader(json.OpenReadStream()))
-            {
-                fileContent = reader.ReadToEnd();
-            }
-            JObject measurements = JObject.Parse(fileContent);
-            IList<JToken> result = measurements["measurements"].Children().ToList();
-            IList<SplitData> splitData = new List<SplitData>();
-            foreach (JToken o in result)
-            {
-                SplitData searchResult = o.ToObject<SplitData>();
-                splitData.Add(searchResult);
-            }
-            var d = new Dictionary<int, int>();
-            int index = 0;
-            foreach (var item in splitData)
-            {
-                if (item.y != null)
-                {
-                    numbers[index] = Convert.ToInt32(item.y);
-                    index++;
-                }
-            }
-            Array.Sort(numbers);
-            foreach (var item in numbers)
-            {
-                if (d.ContainsKey(item) && item != 0)
-                {
-                    d[item]++;
-                }
-                else
-                {
-                    d[item] = 1;
-                }
-            }
-            foreach (var val in d)
-            {
-                string res = val.Key + " occured " + val.Value + " times";
-                results.Add(res);
-            }
-            results.RemoveAt(0);
+            string fileContent = ReadFileContent(json);
+            List<SplitData> splitData = ParseSplitData(fileContent);
+            List<int> numbers = GetNonNullYValues(splitData);
+            numbers.Sort();
+            Dictionary<int, int> occurrences = CountOccurrences(numbers);
+            List<string> results = GenerateResults(occurrences);
             return results;
         }
         public IList<SplitData> FilterOutsideBounds(IFormFile json)
         {
-            string fileContent = "";
+            string fileContent = ReadFileContent(json);
+            IList<SplitData> measurements = ParseSplitData(fileContent);
+            IList<SplitData> filteredData = FilterDataOutsideBounds(measurements);
+            return filteredData;
+        }
 
-            using (var reader = new StreamReader(json.OpenReadStream()))
-
+        private IList<SplitData> FilterDataOutsideBounds(IList<SplitData> measurements)
+        {
+            IList<SplitData> filteredData = new List<SplitData>();
+            foreach (SplitData measurement in measurements)
             {
-                fileContent = reader.ReadToEnd();
-            }
-
-            JObject measurements = JObject.Parse(fileContent);
-
-            IList<JToken> result = measurements["measurements"].Children().ToList();
-
-            IList<SplitData> splitData = new List<SplitData>();
-
-            foreach (JToken o in result)
-            {
-                SplitData measurement = o.ToObject<SplitData>();
-                if (measurement.x != null && measurement.x > 7650 || measurement.x < 300)
+                if (IsMeasurementOutsideBounds(measurement))
                 {
-                    splitData.Add(measurement);
+                    filteredData.Add(measurement);
                 }
             }
-            return splitData;
+            return filteredData;
         }
+
+        private bool IsMeasurementOutsideBounds(SplitData measurement)
+        {
+            return (measurement.x != null && (measurement.x > 7650 || measurement.x < 300));
+        }
+
         public JObject MedianFilter(IFormFile file)
         {
             try

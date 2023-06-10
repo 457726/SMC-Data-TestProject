@@ -20,13 +20,6 @@ namespace SMC_Data.Controllers
             _filterLogic = filterLogic;
         }
 
-        [HttpPut("~/TestReturnedData")]
-        public JsonResult TestData(IFormFile json)
-        {
-            var data = _filterLogic.TestData(json);
-            return Json(data);
-        }
-
         [HttpPut("~/FilterMultiplesZ")]
         public JsonResult FilterOutMultiplesZ(IFormFile json)
         {
