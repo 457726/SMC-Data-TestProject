@@ -22,7 +22,14 @@ namespace SMC_Data.Logic
                 return filteredList;
             }
         }
-
+        public MetricStats AllCalculations(IFormFile file)
+        {
+            var results = new MetricStats();
+            results.DistanceCovered = CalculateDistanceCovered(file);
+            results.AverageSpeed = CalculateAverageSpeed(file);
+            results.HighestSpeed = CalculateHighestSpeed(file);
+            return results;
+        }
         private double CalculateDistance(double x1, double y1, double x2, double y2)
         {
             return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
