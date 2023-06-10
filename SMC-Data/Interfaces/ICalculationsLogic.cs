@@ -7,6 +7,6 @@ namespace SMC_Data.Interfaces
         double CalculateAverageSpeed(IFormFile file);
         double CalculateDistanceCovered(IFormFile file);
         double CalculateHighestSpeed(IFormFile file);
-        public MetricStats AllCalculations(IFormFile file);
+        MetricStats AllCalculations(IFormFile file);
     }
 }
