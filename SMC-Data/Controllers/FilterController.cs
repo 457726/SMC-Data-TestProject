@@ -38,7 +38,7 @@ namespace SMC_Data.Controllers
             var results = _filterLogic.FilterOutMultiplesY(json);
             return Json(results);
         }
-        [HttpPut("~/FilterBounds")]
+        [HttpPut("~/FilterOutsideBounds")]
         public JsonResult FilterOutsideBounds(IFormFile json)
         {
             var outsidebounds = _filterLogic.FilterOutsideBounds(json);

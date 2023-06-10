@@ -36,5 +36,12 @@ namespace SMC_Data.Controllers
             var highSpeed = calculationsLogic.CalculateHighestSpeed(json);
             return Json(highSpeed);
         }
+
+        [HttpPut("~/AllCalculations")]
+        public JsonResult AllCalculations(IFormFile json)
+        {
+            var metricStats = calculationsLogic.AllCalculations(json);
+            return Json(metricStats);
+        }
     }
 }
