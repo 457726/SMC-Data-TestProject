@@ -8,7 +8,7 @@ namespace SMC_Data.Interfaces
         List<string> FilterOutMultiplesX(IFormFile json);
         List<string> FilterOutMultiplesY(IFormFile json);
         List<string> FilterOutMultiplesZ(IFormFile json);
-        IList<SplitData> FilterOutsideBounds(IFormFile json);
+        List<SplitData> FilterOutsideBounds(IFormFile json);
         JObject MedianFilter(IFormFile file);
     }
 }
