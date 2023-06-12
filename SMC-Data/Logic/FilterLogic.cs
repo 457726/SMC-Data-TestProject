@@ -106,17 +106,17 @@ namespace SMC_Data.Logic
             List<string> results = GenerateResults(occurrences);
             return results;
         }
-        public IList<SplitData> FilterOutsideBounds(IFormFile json)
+        public List<SplitData> FilterOutsideBounds(IFormFile json)
         {
             string fileContent = ReadFileContent(json);
-            IList<SplitData> measurements = ParseSplitData(fileContent);
-            IList<SplitData> filteredData = FilterDataOutsideBounds(measurements);
+            List<SplitData> measurements = ParseSplitData(fileContent);
+            List<SplitData> filteredData = FilterDataOutsideBounds(measurements);
             return filteredData;
         }
 
-        private IList<SplitData> FilterDataOutsideBounds(IList<SplitData> measurements)
+        private List<SplitData> FilterDataOutsideBounds(List<SplitData> measurements)
         {
-            IList<SplitData> filteredData = new List<SplitData>();
+            List<SplitData> filteredData = new List<SplitData>();
             foreach (SplitData measurement in measurements)
             {
                 if (IsMeasurementOutsideBounds(measurement))
@@ -134,13 +134,11 @@ namespace SMC_Data.Logic
 
         public JObject MedianFilter(IFormFile file)
         {
-            try
-            {
                 string json = ReadFileContent(file);
                 JObject jObject = JObject.Parse(json);
                 JArray measurements = jObject["measurements"].Value<JArray>();
 
-                for (int i = 0; i < measurements.Count - 3; i += 4)
+                for (int i = 0; i < measurements.Count - 2; i += 3)
                 {
                     FilterMeasurementsGroup(measurements, i, "x");
                     FilterMeasurementsGroup(measurements, i, "y");
@@ -148,17 +146,12 @@ namespace SMC_Data.Logic
                 }
 
                 return jObject;
-            }
-            catch (Exception ex)
-            {
-                return new JObject(ex.Message);
-            }
         }
 
         private void FilterMeasurementsGroup(JArray measurements, int startIndex, string axis)
         {
             List<double?> values = new List<double?>();
-            for (int i = startIndex; i < startIndex + 4; i++)
+            for (int i = startIndex; i < startIndex + 3; i++)
             {
                 double? value = measurements[i][axis].Value<double?>();
                 values.Add(value);
@@ -167,7 +160,7 @@ namespace SMC_Data.Logic
             values.Sort();
             double? median = values[1];
 
-            for (int i = startIndex; i < startIndex + 4; i++)
+            for (int i = startIndex; i < startIndex + 3; i++)
             {
                 double? value = measurements[i][axis].Value<double?>();
                 if (value != median)
